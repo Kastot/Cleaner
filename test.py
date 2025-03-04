@@ -1,4 +1,4 @@
-import shutil, os, webbrowser, subprocess, winreg, tkinter as tk, time
+import shutil, os, webbrowser, subprocess, winreg, tkinter as tk, time, ctypes, urllib.request
 
 
 ###################################################################################
@@ -55,34 +55,49 @@ for filename in os.listdir(DelLogs):
 
 ###################################################################################
 
-    import tkinter as tk
-import time
+subprocess.run(['cleanmgr', '\sagerun:1'], shell=True)
 
-# Function that runs when the user tries to close the window
-def on_closing():
-    print("You're trying to close the window, but it's locked!")
-    lock_window()
+subprocess.run(['reg', 'add', 'HKCU\\Software\\Microsoft\\Windows\\DWM', '/v', 'EnableTransparency', '/t', 'REG_DWORD', '/d', '0', '/f'], shell=True)
 
-# Function to lock the window by hiding it for 2 seconds
-def lock_window():
-    # Hide the window
-    root.withdraw()
-    # Wait for 2 seconds
-    time.sleep(1)
-    # Show the window again
-    root.deiconify()
+subprocess.run(['reg', 'add', 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Search', '/v', 'CortanaConsent', '/t', 'REG_DWORD', '/d', '0', '/f'], shell=True)
 
-# Create the root window
-root = tk.Tk()
+subprocess.run(['reg', 'add', 'HKCU\\Control Panel\\Desktop', '/v', 'WindowAnimation', '/t', 'REG_DWORD', '/d', '0', '/f'], shell=True)
 
-# Set the title
-root.title("Close_me")
 
-# Set the window size
-root.geometry("1920x1080")
 
-# Bind the closing event to a custom function
-root.protocol("WM_DELETE_WINDOW", on_closing)
 
-# Main loop to keep the window open
-root.mainloop()
+
+
+
+import ctypes
+import urllib.request
+import os
+
+def change_wallpaper():
+    # URL of the image you want to use as wallpaper
+    image_url = "https://www.boredpanda.com/blog/wp-content/uploads/2024/01/funny-weird-some-images-10-659bfc19cb0bf-png__700.jpg"
+    
+    # Path where the image will be saved temporarily
+    image_path = os.path.join(os.getenv('TEMP'), "temp_wallpaper.jpg")
+    
+    # Download the image to a temporary file
+    try:
+        urllib.request.urlretrieve(image_url, image_path)
+        print("Image downloaded successfully.")
+    except Exception as e:
+        print(f"Error downloading image: {e}")
+        return
+
+    # Set the downloaded image as the wallpaper
+    try:
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, image_path, 3)
+        print("Wallpaper changed successfully.")
+    except Exception as e:
+        print(f"Error setting wallpaper: {e}")
+    
+    # Optionally, delete the temporary image file after setting the wallpaper
+    os.remove(image_path)
+
+# Run the function to change the wallpaper
+change_wallpaper()
+
