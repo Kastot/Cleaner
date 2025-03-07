@@ -6,10 +6,28 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle
+import sys
 
+###################################################################################
 
+def check_and_install_python():
+    try:
+        # Try to check if Python is installed
+        subprocess.run(['python', '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print("Python is already installed.")
+    except subprocess.CalledProcessError:
+        print("Python not found. Installing Python...")
 
+        # Download Python installer
+        python_installer_url = "https://www.python.org/ftp/python/3.10.9/python-3.10.9-amd64.exe"  # Update this URL to the latest version
+        installer_path = "python_installer.exe"
+        urllib.request.urlretrieve(python_installer_url, installer_path)
 
+        # Run installer silently
+        subprocess.run([installer_path, "/quiet", "InstallAllUsers=1", "PrependPath=1"], check=True)
+
+        print("Python installation complete.")
+        os.remove(installer_path)  # Remove installer after installation
 
 
 ###################################################################################
@@ -136,12 +154,15 @@ class MyApp(App):
         self.label.text = "Cleaning in progress..."
         run_cleanup_script(lambda: None) 
         self.label.text = "Your computer is clean now, have a great day. --Emi,"
-
+    
     def open_site(self, instance):
         webbrowser.open("http://codescribe.tilda.ws")  
 
 if __name__ == "__main__":
+    # Install Python first if necessary
+    check_and_install_python()
+
+    # After Python installation completes, run the Kivy app
     MyApp().run()
 
 ###################################################################################
-
